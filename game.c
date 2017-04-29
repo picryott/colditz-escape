@@ -36,7 +36,7 @@
 #include <psp/psp-printf.h>
 #endif
 
-#include "data-types.h"
+#include <stdint.h>
 #include "low-level.h"
 #include "soundplayer.h"
 #include "colditz.h"

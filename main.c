@@ -63,7 +63,7 @@
 #endif
 
 #include "getopt.h"
-#include "data-types.h"
+#include <stdint.h>
 #include "low-level.h"
 #include "colditz.h"
 #include "graphics.h"

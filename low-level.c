@@ -32,7 +32,7 @@
 #include <psptypes.h>
 #include <psp/psp-printf.h>
 #endif
-#include "data-types.h"
+#include <stdint.h>
 
 #include "colditz.h"
 #include "low-level.h"

@@ -50,7 +50,7 @@
 #include <pspiofilemgr.h>
 #endif
 
-#include "data-types.h"
+#include <stdint.h>
 #include "low-level.h"
 #include "colditz.h"
 #include "eschew/eschew.h"

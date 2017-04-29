@@ -52,7 +52,7 @@
 #include "win32/winXAudio2.h"
 #endif
 
-#include "data-types.h"
+#include <stdint.h>
 #include "low-level.h"
 #include "soundplayer.h"
 #include "modplayeri.h"

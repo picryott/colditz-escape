@@ -25,7 +25,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "data-types.h"
+#include <stdint.h>
 #include "videoplayer.h"
 
 #if defined(WIN32)
