@@ -27,6 +27,8 @@
 extern "C" {
 #endif
 
+#include <stdbool.h>
+
 /*
  *	These game macro will come handy later on
  */
@@ -138,7 +140,7 @@ bool load_game(char* load_name);
 void depack_loadtune();
 void set_room_props();
 void set_sfxs();
-int  move_guards();
+bool  move_guards();
 void toggle_exit(uint32_t exit_nr);
 int16_t  check_footprint(int16_t dx, int16_t d2y);
 int16_t  check_tunnel_io();

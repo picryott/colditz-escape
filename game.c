@@ -1413,7 +1413,7 @@ void clear_pursuit(uint32_t p)
 
 
 // These helper functions are used by guard_in_pursuit() & move_guards()
-static __inline bool guard_close_by(i, pos_x, pos_2y)
+static __inline bool guard_close_by(int i, int16_t pos_x, int16_t pos_2y)
 {
 int16_t dx, dy;
     dx = pos_x+16 - guard(i).px;
@@ -1425,7 +1425,7 @@ int16_t dx, dy;
 }
 
 
-static __inline bool guard_collision(i, pos_x, pos_2y)
+static __inline bool guard_collision(int i, int16_t pos_x, int16_t pos_2y)
 {
 int16_t dx, dy;
     dx = pos_x+16 - guard(i).px;
@@ -2785,7 +2785,7 @@ void check_on_prisoners()
     static int nb_escaped = 0;
     int p;
     uint16_t i;
-    bool authorized_id;
+    uint16_t authorized_id;
     uint8_t room_desc_id;
     int game_over_count, game_won_count;
 
@@ -3077,5 +3077,5 @@ static bool is_playing = false;
 #error No SFX playout for this platform
 #endif
     }
-    is_playing = ~is_playing;
+    is_playing = !is_playing;
 }

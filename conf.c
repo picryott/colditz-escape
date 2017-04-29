@@ -36,6 +36,7 @@
 #include <GL/glut.h>
 #endif
 #include "data-types.h"
+#include <stdbool.h>
 /*
 	This constant *MUST* be defined before including eschew.h,
 	*IN* the source where you do the runtime initialization

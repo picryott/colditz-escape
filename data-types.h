@@ -28,16 +28,6 @@ extern "C" {
 /* use standard fixed size ints*/
 #include <stdint.h>
 
-#if !defined(bool)
-#define bool int
-#endif
-#if !defined(false)
-#define false ((bool)0)
-#endif
-#if !defined(true)
-#define true ((bool)(!false))
-#endif
-
 #if !defined(min)
 #define min(a,b) (((a)<(b))?(a):(b))
 #endif

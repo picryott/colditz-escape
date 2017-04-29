@@ -28,6 +28,8 @@
 extern "C" {
 #endif
 
+#include <stdbool.h>
+
 // General compilation options for the program
 #define CHEATMODE_ENABLED
 #define ANTI_TAMPERING_ENABLED
