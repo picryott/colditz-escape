@@ -1602,6 +1602,37 @@ bool getCommandLine(int argc, char* argv[])
 	return result;
 }
 
+void configuration_init()
+{
+	init_xml();
+	if (!read_xml(confname))
+	{	// config.xml not found => try to create one
+		printf("Could not open '%s' config file. Creating a new one...\n", confname);
+		fflush(stdout);
+		set_xml_defaults();
+		if (!write_xml(confname))
+		{
+			perr("  ERROR.\n");
+		}
+	}
+	if (opt_original_mode)
+	{
+		opt_enhanced_guards = false;
+		enabled_menus[OPTIONS_MENU][MENU_ENHANCEMENTS] = 0;
+		enabled_menus[MAIN_MENU][MENU_SAVE] = 0;
+		enabled_menus[MAIN_MENU][MENU_LOAD] = 0;
+	}
+
+	// Now that we have our config set, we can initialize some controls values
+	key_nation[0] = KEY_BRITISH;
+	key_nation[1] = KEY_FRENCH;
+	key_nation[2] = KEY_AMERICAN;
+	key_nation[3] = KEY_POLISH;
+	key_nation[4] = KEY_PRISONERS_LEFT;
+	key_nation[5] = KEY_PRISONERS_RIGHT;
+}
+
+
 
 /* Here we go! */
 #if (defined(WIN32) && !defined(_DEBUG))
@@ -1655,36 +1686,14 @@ int main (int argc, char *argv[])
 	init_shader();
 #endif
 
-//	remove(confname);
-    init_xml();
-    if (!read_xml(confname))
-    {	// config.xml not found => try to create one
-        printf("Could not open '%s' config file. Creating a new one...\n", confname);
-        fflush(stdout);
-        set_xml_defaults();
-        if (!write_xml(confname))
-            perr("  ERROR.\n");
-    }
-    if (opt_original_mode)
-    {
-        opt_enhanced_guards = false;
-        enabled_menus[OPTIONS_MENU][MENU_ENHANCEMENTS] = 0;
-        enabled_menus[MAIN_MENU][MENU_SAVE] = 0;
-        enabled_menus[MAIN_MENU][MENU_LOAD] = 0;
-    }
+//	read configuration file and set configuration values
+	configuration_init();
 
 #if !defined(PSP)
     if (opt_fullscreen)
         glutFullScreen();
 #endif
 
-    // Now that we have our config set, we can initialize some controls values
-    key_nation[0] = KEY_BRITISH;
-    key_nation[1] = KEY_FRENCH;
-    key_nation[2] = KEY_AMERICAN;
-    key_nation[3] = KEY_POLISH;
-    key_nation[4] = KEY_PRISONERS_LEFT;
-    key_nation[5] = KEY_PRISONERS_RIGHT;
 
     // Load the data. If it's the first time the game is ran, we might have
     // to uncompress LOADTUNE.MUS (PowerPack) and SKR_COLD (custom compression)
