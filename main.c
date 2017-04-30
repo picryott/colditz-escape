@@ -1564,6 +1564,44 @@ static void glut_mouse_buttons(int button, int state, int x, int y)
     SET_MODS;
 }
 
+bool getCommandLine(int argc, char* argv[])
+{
+	bool result = true;
+	// Flags
+	int opt_error = 0;	// getopt
+	uint32_t  i;
+	// Process commandline options (works for PSP too with psplink)
+	while ((i = getopt(argc, argv, "hvbs:")) != -1)
+	{
+		switch (i)
+		{
+		case 'v':		// Print verbose messages
+			opt_verbose = true;
+			break;
+#if defined(DEBUG_ENABLED)
+		case 'b':       // Debug mode
+			opt_debug = true;
+			break;
+		case 's':		// debug SID (sprite) test
+			sscanf(optarg, ("%x"), &opt_sid);
+			break;
+#endif
+		case 'h':		// Half size on Windows
+			opt_halfsize = true;
+			break;
+		default:		// Unknown option
+			opt_error++;
+			break;
+		}
+	}
+	if (((argc - optind) > 3) || opt_error)
+	{
+		printf("usage: %s\n\n", argv[0]);
+		result = false;
+	}
+	return result;
+}
+
 
 /* Here we go! */
 #if (defined(WIN32) && !defined(_DEBUG))
@@ -1576,9 +1614,6 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
 int main (int argc, char *argv[])
 #endif
 {
-
-    // Flags
-    int opt_error 			= 0;	// getopt
     // General purpose
     uint32_t  i;
 
@@ -1592,36 +1627,15 @@ int main (int argc, char *argv[])
         fbuffer[i] = NULL;
 
     // Process commandline options (works for PSP too with psplink)
-    while ((i = getopt (argc, argv, "hvbs:")) != -1)
-        switch (i)
-    {
-        case 'v':		// Print verbose messages
-            opt_verbose = true;
-            break;
-#if defined(DEBUG_ENABLED)
-        case 'b':       // Debug mode
-            opt_debug = true;
-            break;
-        case 's':		// debug SID (sprite) test
-            sscanf(optarg, ("%x"), &opt_sid);
-            break;
-#endif
-        case 'h':		// Half size on Windows
-            opt_halfsize = true;
-            break;
-        default:		// Unknown option
-            opt_error++;
-            break;
-    }
+	if (!getCommandLine(argc, argv))
+	{
+		ERR_EXIT;
+	}
+
 #if !defined(PSP)
 	printf("\nColditz Escape! %s\n", VERSION);
 	printf("by Aperture Software - 2009-2010\n\n");
 #endif
-    if ( ((argc-optind) > 3) || opt_error)
-    {
-        printf("usage: %s\n\n", argv[0]);
-        ERR_EXIT;
-    }
 
 #if defined(PSP)
     gl_width = PSP_SCR_WIDTH;
