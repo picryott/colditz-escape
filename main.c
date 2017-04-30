@@ -1661,6 +1661,34 @@ bool loadGameFiles()
 	return result;
 }
 
+bool graphics_init()
+{
+	bool result = true;
+	set_textures();
+	set_sfxs();
+	// We're going to convert the cells array, from 2 pixels per byte (paletted)
+	// to on RGB(A) word per pixel
+	rgbCells = (uint8_t*) aligned_malloc(fsize[CELLS] * 2 * RGBA_SIZE, 16);
+	if (rgbCells != NULL)
+	{
+		// Get a palette we can work with
+		to_16bit_palette(palette_index, 0xFF, PALETTES);
+
+		// Convert the cells to RGBA data
+		cells_to_wGRAB(fbuffer[CELLS], rgbCells);
+
+		// Do the same for overlay sprites
+		init_sprites();
+		sprites_to_wGRAB();	// Must be called after init sprite
+	}
+	else
+	{
+		perr("Could not allocate RGB Cells buffers\n");
+		result = false;
+	}
+
+	return result;
+}
 
 
 
@@ -1730,9 +1758,6 @@ int main (int argc, char *argv[])
 		ERR_EXIT;
 	}
 
-	set_textures();
-	set_sfxs();
-
     // Set global variables
     t_last = mtime();
     srand(t_last);
@@ -1743,24 +1768,11 @@ int main (int argc, char *argv[])
     if (!audio_init())
         perr("Could not Initialize audio\n");
 
-    // We're going to convert the cells array, from 2 pixels per byte (paletted)
-    // to on RGB(A) word per pixel
-    rgbCells = (uint8_t*) aligned_malloc(fsize[CELLS]*2*RGBA_SIZE, 16);
-    if (rgbCells == NULL)
-    {
-        perr("Could not allocate RGB Cells buffers\n");
-        ERR_EXIT;
-    }
-
-    // Get a palette we can work with
-    to_16bit_palette(palette_index, 0xFF, PALETTES);
-
-    // Convert the cells to RGBA data
-    cells_to_wGRAB(fbuffer[CELLS],rgbCells);
-
-    // Do the same for overlay sprites
-    init_sprites();
-    sprites_to_wGRAB();	// Must be called after init sprite
+	if (!graphics_init())
+	{
+		// fatal error
+		ERR_EXIT;
+	}
 
     if (opt_skip_intro)
     {
