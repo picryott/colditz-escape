@@ -1724,8 +1724,16 @@ bool displayIntro()
 	return result;
 }
 
-
-
+void windowsDimensions_init()
+{
+#if defined(PSP)
+	gl_width = PSP_SCR_WIDTH;
+	gl_height = PSP_SCR_HEIGHT;
+#else
+	gl_width = (opt_halfsize ? 1 : 2)*PSP_SCR_WIDTH;
+	gl_height = (opt_halfsize ? 1 : 2)*PSP_SCR_HEIGHT;
+#endif
+}
 
 /* Here we go! */
 #if (defined(WIN32) && !defined(_DEBUG))
@@ -1735,98 +1743,103 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
 #define argc __argc
 #define argv __argv
 #else
-int main (int argc, char *argv[])
+int main(int argc, char *argv[])
 #endif
 {
-    // General purpose
-    uint32_t  i;
+	// General purpose
+	uint32_t  i;
 
 #if defined(PSP)
-    setup_callbacks();
+	setup_callbacks();
 #endif
 
-    // A little cleanup
-    fflush(stdin);
-    for (i=0; i<NB_FILES; i++)
-        fbuffer[i] = NULL;
+	// A little cleanup
+	fflush(stdin);
+	for (i = 0; i < NB_FILES; i++)
+		fbuffer[i] = NULL;
 
-    // Process commandline options (works for PSP too with psplink)
-	if (!getCommandLine(argc, argv))
+	// Process commandline options (works for PSP too with psplink)
+	if (getCommandLine(argc, argv))
 	{
-		ERR_EXIT;
-	}
-
 #if !defined(PSP)
-	printf("\nColditz Escape! %s\n", VERSION);
-	printf("by Aperture Software - 2009-2010\n\n");
+		printf("\nColditz Escape! %s\n", VERSION);
+		printf("by Aperture Software - 2009-2010\n\n");
 #endif
+		windowsDimensions_init();
 
-#if defined(PSP)
-    gl_width = PSP_SCR_WIDTH;
-    gl_height = PSP_SCR_HEIGHT;
-#else
-    gl_width = (opt_halfsize?1:2)*PSP_SCR_WIDTH;
-    gl_height = (opt_halfsize?1:2)*PSP_SCR_HEIGHT;
-#endif
+		// Well, we're supposed to call that blurb
+		glutInit(&argc, argv);
 
-    // Well, we're supposed to call that blurb
-    glutInit(&argc, argv);
-
-    // Need to have a working GL before we proceed. This is our own init() function
-    glut_init();
+		// Need to have a working GL before we proceed. This is our own init() function
+		glut_init();
 
 #if defined(WIN32)
-	init_shader();
+		init_shader();
 #endif
 
-//	read configuration file and set configuration values
-	configuration_init();
+		//	read configuration file and set configuration values
+		configuration_init();
 
 #if !defined(PSP)
-    if (opt_fullscreen)
-        glutFullScreen();
+		if (opt_fullscreen)
+		{
+			glutFullScreen();
+		}
 #endif
+		// load/checks/fix gamefiles
+		if (loadGameFiles())
+		{
+			// We might want some sound
+			if (!audio_init())
+			{
+				perr("Could not Initialize audio\n"); //non fatal error
+			}
 
-	// load/checks/fix gamefiles
-	if(!loadGameFiles())
+			if (graphics_init())
+			{
+				if (displayIntro())
+				{
+					// Now we can proceed with setting up our display
+					glutDisplayFunc(glut_display);
+					glutReshapeFunc(glut_reshape);
+
+					glutKeyboardFunc(glut_keyboard);
+					glutKeyboardUpFunc(glut_keyboard_up);
+					glutSpecialFunc(glut_special_keys);
+					glutSpecialUpFunc(glut_special_keys_up);
+					glutMouseFunc(glut_mouse_buttons);
+
+					glutJoystickFunc(glut_joystick, 30);
+
+					// Set global variables
+					// just before the main loop
+					t_last = mtime();
+					srand(t_last);
+					program_time = 0;
+					game_time = 0;
+
+					// the main loop
+					glutMainLoop();
+				}
+				else
+				{
+					ERR_EXIT;
+				}
+			}
+			else
+			{
+				// fatal error
+				ERR_EXIT;
+			}
+		}
+		else
+		{
+			ERR_EXIT;
+		}
+	}
+	else
 	{
 		ERR_EXIT;
 	}
-
-    // Set global variables
-    t_last = mtime();
-    srand(t_last);
-    program_time = 0;
-    game_time = 0;
-
-    // We might want some sound
-    if (!audio_init())
-        perr("Could not Initialize audio\n");
-
-	if (!graphics_init())
-	{
-		// fatal error
-		ERR_EXIT;
-	}
-
-	if (!displayIntro())
-	{
-		ERR_EXIT;
-	}
-
-    // Now we can proceed with setting up our display
-    glutDisplayFunc(glut_display);
-    glutReshapeFunc(glut_reshape);
-
-    glutKeyboardFunc(glut_keyboard);
-    glutKeyboardUpFunc(glut_keyboard_up);
-    glutSpecialFunc(glut_special_keys);
-    glutSpecialUpFunc(glut_special_keys_up);
-    glutMouseFunc(glut_mouse_buttons);
-
-    glutJoystickFunc(glut_joystick,30);
-
-    glutMainLoop();
-
     return 0;
 }
