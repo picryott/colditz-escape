@@ -1690,6 +1690,41 @@ bool graphics_init()
 	return result;
 }
 
+bool displayIntro()
+{
+	bool result = true;
+	if (opt_skip_intro)
+	{
+		fade_value = 1.0f;
+		glColor3f(fade_value, fade_value, fade_value);
+		game_state = GAME_STATE_ACTION;
+		glutIdleFunc_save(glut_idle_game);
+		newgame_init();
+	}
+	else
+	{
+		// We'll start with the Intro state
+		// DO NOT call static_screen() here, as it messes up with any earlier psp-printf
+		game_state = GAME_STATE_INTRO | GAME_STATE_STATIC_PIC | GAME_STATE_PICTURE_LOOP | GAME_STATE_CUTSCENE;
+		current_picture = INTRO_SCREEN_START;
+		picture_state = PICTURE_FADE_IN_START;
+		if (load_texture(&texture[INTRO_SCREEN_START]))
+		{
+			glutIdleFunc(glut_idle_suspended);
+			restore_idle = glut_idle_static_pic;
+			game_suspended = true;
+			last_key_used = 0;
+		}
+		else
+		{
+			perr("Could not load INTRO screen\n");
+			result = false;
+		}
+	}
+	return result;
+}
+
+
 
 
 /* Here we go! */
@@ -1774,31 +1809,10 @@ int main (int argc, char *argv[])
 		ERR_EXIT;
 	}
 
-    if (opt_skip_intro)
-    {
-        fade_value = 1.0f;
-        glColor3f(fade_value, fade_value, fade_value);
-        game_state = GAME_STATE_ACTION;
-        glutIdleFunc_save(glut_idle_game);
-        newgame_init();
-    }
-    else
-    {
-        // We'll start with the Intro state
-        // DO NOT call static_screen() here, as it messes up with any earlier psp-printf
-        game_state = GAME_STATE_INTRO | GAME_STATE_STATIC_PIC | GAME_STATE_PICTURE_LOOP | GAME_STATE_CUTSCENE;
-        current_picture = INTRO_SCREEN_START;
-        picture_state = PICTURE_FADE_IN_START;
-        if (!load_texture(&texture[INTRO_SCREEN_START]))
-        {
-            perr("Could not load INTRO screen\n");
-            ERR_EXIT;
-        }
-        glutIdleFunc(glut_idle_suspended);
-        restore_idle = glut_idle_static_pic;
-        game_suspended = true;
-        last_key_used = 0;
-    }
+	if (!displayIntro())
+	{
+		ERR_EXIT;
+	}
 
     // Now we can proceed with setting up our display
     glutDisplayFunc(glut_display);
