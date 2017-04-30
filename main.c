@@ -1632,6 +1632,36 @@ void configuration_init()
 	key_nation[5] = KEY_PRISONERS_RIGHT;
 }
 
+bool loadGameFiles()
+{
+	bool result = true;
+	uint16_t i = 0;
+	// Load the data. If it's the first time the game is ran, we might have
+	// to uncompress LOADTUNE.MUS (PowerPack) and SKR_COLD (custom compression)
+	load_all_files();
+#if defined(ANTI_TAMPERING_ENABLED)
+	for (i = 0; i < NB_FILES; i++)
+	{
+		if (!integrity_check(i))
+		{
+			perr("Integrity check failure on file '%s'\n", fname[i]);
+			result = false;
+		}
+	}
+#endif
+	if (result)
+	{
+		depack_loadtune();
+	}
+	// Some of the files need patching (this was done too in the original game!)
+	if (result)
+	{
+		fix_files(false);
+	}
+	return result;
+}
+
+
 
 
 /* Here we go! */
@@ -1694,22 +1724,11 @@ int main (int argc, char *argv[])
         glutFullScreen();
 #endif
 
-
-    // Load the data. If it's the first time the game is ran, we might have
-    // to uncompress LOADTUNE.MUS (PowerPack) and SKR_COLD (custom compression)
-    load_all_files();
-#if defined(ANTI_TAMPERING_ENABLED)
-    for (i=0; i<NB_FILES; i++)
-        if (!integrity_check(i))
-        {
-            perr("Integrity check failure on file '%s'\n", fname[i]);
-            ERR_EXIT;
-        }
-#endif
-    depack_loadtune();
-
-    // Some of the files need patching (this was done too in the original game!)
-    fix_files(false);
+	// load/checks/fix gamefiles
+	if(!loadGameFiles())
+	{
+		ERR_EXIT;
+	}
 
 	set_textures();
 	set_sfxs();
