@@ -28,7 +28,9 @@
 extern "C" {
 #endif
 
+#include <stdint.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 // General compilation options for the program
 #define CHEATMODE_ENABLED

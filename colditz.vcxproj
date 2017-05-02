@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -14,17 +14,18 @@
     <ProjectGuid>{DE0D60B9-EF9E-4F9A-9BE2-1645CF8AA184}</ProjectGuid>
     <RootNamespace>colditz</RootNamespace>
     <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -118,6 +119,7 @@
     <ClCompile Include="low-level.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="md5.c" />
+    <ClCompile Include="pack.c" />
     <ClCompile Include="psp\psp-setup.c" />
     <ClCompile Include="soundplayer.cpp" />
     <ClCompile Include="videoplayer.c" />
@@ -137,6 +139,7 @@
     <ClInclude Include="getopt_int.h" />
     <ClInclude Include="gettext.h" />
     <ClInclude Include="graphics.h" />
+    <ClInclude Include="pack.h" />
     <ClInclude Include="low-level.h" />
     <ClInclude Include="md5.h" />
     <ClInclude Include="modplayeri.h" />

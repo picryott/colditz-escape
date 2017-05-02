@@ -46,6 +46,8 @@
 #include "eschew/eschew.h"
 #include "conf.h"
 
+#include "pack.h"
+
 
 /* Some more globals */
 uint8_t  obs_to_sprite[NB_OBS_TO_SPRITE];

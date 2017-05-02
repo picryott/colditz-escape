@@ -53,6 +53,9 @@
     <ClCompile Include="win32\wmp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="pack.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="anti-tampering.h">
@@ -131,6 +134,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="win32\wglew.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pack.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
