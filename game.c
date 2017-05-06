@@ -37,6 +37,7 @@
 #endif
 
 #include <stdint.h>
+#include "traces.h"
 #include "low-level.h"
 #include "soundplayer.h"
 #include "colditz.h"

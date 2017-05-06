@@ -29,6 +29,7 @@
 */
 
 #include "colditz.h"
+#include "traces.h"
 #include "low-level.h"
 
 // Some global variables

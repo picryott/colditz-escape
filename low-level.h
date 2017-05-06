@@ -94,16 +94,6 @@ static __inline void psp_any_key()
 #endif
 #endif
 #define ERR_EXIT		do{if (fd!=NULL) fclose(fd); fflush(stdout); FATAL;}while(0)
-#if defined(PSP_ONSCREEN_STDOUT)
-#define perr(...)		printf(__VA_ARGS__)
-#else
-#define perr(...)		fprintf(stderr, __VA_ARGS__)
-#endif
-#define print(...)		printf(__VA_ARGS__)
-#define printv(...)		if(opt_verbose) print(__VA_ARGS__)
-#define perrv(...)		if(opt_verbose) perr(__VA_ARGS__)
-#define printb(...)		if(opt_debug) print(__VA_ARGS__)
-#define perrb(...)		if(opt_debug) perr(__VA_ARGS__)
 
 // size of an array
 #define SIZE_A(ar)		(sizeof(ar)/sizeof(ar[0]))

@@ -122,6 +122,7 @@
     <ClCompile Include="pack.c" />
     <ClCompile Include="psp\psp-setup.c" />
     <ClCompile Include="soundplayer.cpp" />
+    <ClCompile Include="traces.c" />
     <ClCompile Include="videoplayer.c" />
     <ClCompile Include="win32\winXAudio2.cpp" />
     <ClCompile Include="win32\wmp.cpp" />
@@ -139,6 +140,7 @@
     <ClInclude Include="getopt_int.h" />
     <ClInclude Include="gettext.h" />
     <ClInclude Include="graphics.h" />
+    <ClInclude Include="traces.h" />
     <ClInclude Include="pack.h" />
     <ClInclude Include="low-level.h" />
     <ClInclude Include="md5.h" />

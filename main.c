@@ -64,6 +64,7 @@
 
 #include "getopt.h"
 #include <stdint.h>
+#include "traces.h"
 #include "low-level.h"
 #include "colditz.h"
 #include "graphics.h"
@@ -86,7 +87,6 @@ void (*work_around_stupid_linkers_glutIdleFunc)(void (*func)(void)) = glutIdleFu
 
 // Flags
 int debug_flag					= 0;
-bool opt_verbose				= false;
 // Console debug
 bool opt_debug					= false;
 // Additional oncreen debug info
@@ -1576,7 +1576,7 @@ bool getCommandLine(int argc, char* argv[])
 		switch (i)
 		{
 		case 'v':		// Print verbose messages
-			opt_verbose = true;
+			trace_setVerbose(true);
 			break;
 #if defined(DEBUG_ENABLED)
 		case 'b':       // Debug mode
@@ -1752,6 +1752,9 @@ int main(int argc, char *argv[])
 #if defined(PSP)
 	setup_callbacks();
 #endif
+
+	//init the trace engine
+	trace_init();
 
 	// A little cleanup
 	fflush(stdin);

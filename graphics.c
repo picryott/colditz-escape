@@ -51,6 +51,7 @@
 #endif
 
 #include <stdint.h>
+#include "traces.h"
 #include "low-level.h"
 #include "colditz.h"
 #include "eschew/eschew.h"

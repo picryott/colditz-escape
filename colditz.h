@@ -718,7 +718,6 @@ typedef struct
  */
 
 // General program options, including cheats
-extern bool		opt_verbose;
 extern bool		opt_debug;
 extern bool		opt_onscreen_debug;
 extern int		opt_sid;
