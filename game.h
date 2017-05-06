@@ -132,12 +132,9 @@ extern s_guybrush	guybrush[NB_GUYBRUSHES];
  *	Public prototypes
  */
 void free_data();
-void load_all_files();
-void reload_files();
 void newgame_init();
 bool save_game(char* save_name);
 bool load_game(char* load_name);
-void depack_loadtune();
 void set_room_props();
 void set_sfxs();
 bool  move_guards();
@@ -147,7 +144,6 @@ int16_t  check_tunnel_io();
 bool check_guard_footprint(uint8_t g, int16_t dx, int16_t d2y);
 void switch_nation(uint8_t new_nation);
 void switch_room(int16_t exit, bool tunnel_io);
-void fix_files(bool reload);
 void timed_events(uint16_t hours, uint16_t minutes_high, uint16_t minutes_low);
 void check_on_prisoners();
 void play_sfx(int sfx_id);

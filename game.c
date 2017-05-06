@@ -48,6 +48,7 @@
 #include "conf.h"
 
 #include "pack.h"
+#include "gamefiles.h"
 
 
 /* Some more globals */
@@ -124,85 +125,7 @@ const uint8_t looping_animation[NB_ANIMATED_SPRITES] =
     {	1, 1, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0 };
 
 
-// Uncompress the PowerPacked LOADTUNE.MUS if needed
-void depack_loadtune()
-{
-    size_t read;
-    uint32_t length;
-    uint8_t *ppbuffer, *buffer;
 
-    // Don't bother if we already have an uncompressed LOADTUNE
-    if ((fd = fopen (mod_name[MOD_LOADTUNE], "rb")) != NULL)
-    {
-        fclose(fd);
-        return;
-    }
-
-    // No uncompressed LOADTUNE? Look for the PowerPacked one
-    printf("Couldn't find file '%s'\n  Trying to use PowerPacked '%s' instead\n", mod_name[0], PP_LOADTUNE_NAME);
-
-    if ((fd = fopen (PP_LOADTUNE_NAME, "rb")) == NULL)
-    {
-        printf("  Can't find '%s' - Aborting.\n", PP_LOADTUNE_NAME);
-        return;
-    }
-
-    if ( (ppbuffer = (uint8_t*) calloc(PP_LOADTUNE_SIZE, 1)) == NULL)
-    {
-        printf("  Could not allocate source buffer for ppunpack\n");
-        fclose(fd);
-        return;
-    }
-
-    // So far so good
-    read = fread (ppbuffer, 1, PP_LOADTUNE_SIZE, fd);
-    fclose(fd);
-
-    // Is it the file we are looking for?
-    if (read != PP_LOADTUNE_SIZE)
-    {
-        printf("  '%s': Unexpected file size or read error\n", PP_LOADTUNE_NAME);
-        free(ppbuffer); return;
-    }
-
-    if (ppbuffer[0] != 'P' || ppbuffer[1] != 'P' ||
-        ppbuffer[2] != '2' || ppbuffer[3] != '0')
-    {
-        printf("  '%s': Not a PowerPacked file\n", PP_LOADTUNE_NAME);
-        free(ppbuffer); return;
-    }
-
-    // The uncompressed length is given at the end of the file
-    length = read24(ppbuffer, PP_LOADTUNE_SIZE-4);
-
-    if ( (buffer = (uint8_t*) calloc(length,1)) == NULL)
-    {
-        printf("  Could not allocate destination buffer for ppunpack\n");
-        free(ppbuffer); return;
-    }
-
-    printf("  Uncompressing...");
-    // Call the PowerPacker unpack subroutine
-    ppDecrunch(&ppbuffer[8], buffer, &ppbuffer[4], PP_LOADTUNE_SIZE-12, length, ppbuffer[PP_LOADTUNE_SIZE-1]);
-    free(ppbuffer);
-
-    // We'll play MOD directly from files, so write it
-    printf("  OK.\n  Now saving file as '%s'\n", mod_name[0]);
-    if ((fd = fopen (mod_name[0], "wb")) == NULL)
-    {
-        printf("  Couldn't create file '%s'\n", mod_name[0]);
-        free(buffer); return;
-    }
-
-    read = fwrite (buffer, 1, length, fd);
-    if (read != length)
-        printf("  '%s': write error.\n", mod_name[0]);
-
-    printf("  DONE.\n\n");
-
-    fclose(fd);
-    free(buffer);
-}
 
 // free all allocated data
 void free_data()
@@ -213,139 +136,6 @@ void free_data()
 	for (i=0; i<NB_FILES; i++)
 		SAFREE(fbuffer[i]);
 	audio_release();
-}
-
-// Initial file loader
-void load_all_files()
-{
-    size_t read;
-    uint16_t i;
-    int compressed_loader = 0;
-
-    // We need a little padding of the loader to keep the offsets happy
-    fsize[LOADER] += LOADER_PADDING;
-
-    for (i=0; i<NB_FILES; i++)
-    {
-        if ( (fbuffer[i] = (uint8_t*) aligned_malloc(fsize[i], 16)) == NULL)
-        {
-            printf("Could not allocate buffers\n");
-            ERR_EXIT;
-        }
-
-        if (i==LOADER)
-        {
-            fbuffer[LOADER] += LOADER_PADDING;
-            fsize[LOADER] -= LOADER_PADDING;
-        }
-
-        if ((fd = fopen (fname[i], "rb")) == NULL)
-        {
-            printf("Couldn't find file '%s'\n", fname[i]);
-
-            /* Take care of the compressed loader if present */
-            if (i == LOADER)
-            {
-                // Uncompressed loader was not found
-                // Maybe there's a compressed one?
-                printf("  Trying to use compressed loader '%s' instead\n", ALT_LOADER);
-                if ((fd = fopen (ALT_LOADER, "rb")) == NULL)
-                {
-                    printf("  '%s' not found - Aborting.\n", ALT_LOADER);
-                    ERR_EXIT;
-                }
-                // OK, file was found - let's allocated the compressed data buffer
-                if ((mbuffer = (uint8_t*) aligned_malloc(ALT_LOADER_SIZE, 16)) == NULL)
-                {
-                    printf("  Could not allocate source buffer for loader decompression\n");
-                    ERR_EXIT;
-                }
-
-                read = fread (mbuffer, 1, ALT_LOADER_SIZE, fd);
-                if ((read != ALT_LOADER_SIZE) && (read != ALT_LOADER_SIZE2))
-                {
-                    printf("  '%s': Unexpected file size or read error\n", ALT_LOADER);
-                    ERR_EXIT;
-                }
-                compressed_loader = 1;
-
-                printf("  Uncompressing...");
-                if (uncompress(fsize[LOADER]))
-                {
-                    printf("  Error!\n");
-                    ERR_EXIT;
-                }
-
-                if (read == ALT_LOADER_SIZE2)   // SKR_COLD NTSC FIX, with one byte diff
-                    writebyte(fbuffer[LOADER], 0x1b36, 0x67);
-
-                printf("  OK.\n  Now saving file as '%s'\n",fname[LOADER]);
-                if ((fd = fopen (fname[LOADER], "wb")) == NULL)
-                {
-                    printf("  Can't create file '%s'\n", fname[LOADER]);
-                    ERR_EXIT;
-                }
-
-                // Write file
-                read = fwrite (fbuffer[LOADER], 1, fsize[LOADER], fd);
-                if (read != fsize[LOADER])
-                {
-                    printf("  '%s': Unexpected file size or write error\n", fname[LOADER]);
-                    ERR_EXIT;
-                }
-                printf("  DONE.\n\n");
-            }
-            else
-                ERR_EXIT;
-        }
-
-        // Read file (except in the case of a compressed loader)
-        if (!((i == LOADER) && (compressed_loader)))
-        {
-            printv("Reading file '%s'...\n", fname[i]);
-            read = fread (fbuffer[i], 1, fsize[i], fd);
-            if (read != fsize[i])
-            {
-                printf("'%s': Unexpected file size or read error\n", fname[i]);
-                ERR_EXIT;
-            }
-        }
-
-        fclose (fd);
-        fd = NULL;
-    }
-
-    // OK, now we can reset our LOADER's start address
-    fbuffer[LOADER] -= LOADER_PADDING;
-}
-
-
-// Reload the files for a game restart
-void reload_files()
-{
-    size_t read;
-    uint32_t i;
-
-    for (i=0; i<NB_FILES_TO_RELOAD; i++)
-    {
-        if ((fd = fopen (fname[i], "rb")) == NULL)
-        {
-            perrv ("fopen()");
-            printf("Can't find file '%s'\n", fname[i]);
-        }
-        // Read file
-        printv("Reloading file '%s'...\n", fname[i]);
-        read = fread (fbuffer[i], 1, fsize[i], fd);
-        if (read != fsize[i])
-        {
-            perrv ("fread()");
-            printf("'%s': Unexpected file size or read error\n", fname[i]);
-            ERR_EXIT;
-        }
-
-        fclose (fd);
-        fd = NULL;
-    }
 }
 
 // Reset the variables relevant to a new game
@@ -394,8 +184,14 @@ void newgame_init()
 
     if (game_restart)
     {
-        reload_files();
-        fix_files(true);
+		if (reload_files())
+		{
+			fix_files(true);
+		}
+		else
+		{
+			ERR_EXIT;
+		}
     }
 
     // clear the events array
@@ -502,15 +298,7 @@ void newgame_init()
     game_restart = true;
 }
 
-/*
- *	SAVE AND LOAD FUNCTIONS
- */
-#define SAVE_SINGLE(el)  if (fwrite(&el, sizeof(el), 1, fd) != 1) return false
-#define SAVE_ARRAY(ar)   if (fwrite(ar, sizeof(ar[0]), SIZE_A(ar), fd) != SIZE_A(ar)) return false;
-#define SAVE_BUFFER(buf) if (fwrite(fbuffer[buf], 1, fsize[buf], fd) !=  fsize[buf]) return false;
-#define LOAD_SINGLE(el)  if (fread(&el, sizeof(el), 1 , fd) != 1) return false
-#define LOAD_ARRAY(ar)   if (fread(ar, sizeof(ar[0]), SIZE_A(ar), fd) != SIZE_A(ar)) return false;
-#define LOAD_BUFFER(buf) if (fread(fbuffer[buf], 1, fsize[buf], fd) !=  fsize[buf]) return false;
+
 bool save_game(char* save_name)
 {
     int i;
@@ -2929,64 +2717,7 @@ void check_on_prisoners()
     }
 }
 
-// Looks like the original programmer found that some of the data files had issues,
-// but rather than fixing the files, they patched them in the loader... go figure!
-void fix_files(bool reload)
-{
-    uint8_t i;
-    uint32_t mask;
 
-    //
-    // Original game patch
-    //
-    //////////////////////////////////////////////////////////////////
-    //00001C10                 move.b  #$30,(fixed_crm_vector).l ; '0'
-    writebyte(fbuffer[ROOMS],FIXED_CRM_VECTOR,0x30);
-    //00001C18                 move.w  #$73,(exits_base).l ; 's' ; fix room #0's exits
-    writeword(fbuffer[ROOMS],ROOMS_EXITS_BASE,0x0073);
-    //00001C20                 move.w  #1,(exits_base+2).l
-    writeword(fbuffer[ROOMS],ROOMS_EXITS_BASE+2,0x0001);
-    //00001C28                 move.w  #$114,(r116_exits+$E).l ; fix room #116's last exit (0 -> $114)
-    writeword(fbuffer[ROOMS],ROOMS_EXITS_BASE+(0x116<<4)+0xE,0x0114);
-
-    if (reload)
-    // On a reload, no need to fix the other files again
-        return;
-
-    // DEBUG: I've always wanted to have the stethoscope!
-    // (replaces the stone in the courtyard)
-//	writeword(fbuffer[OBJECTS],32,0x000E);
-
-    // OK, because we're not exactly following the exact exit detection routines from the original game
-    // (we took some shortcuts to make things more optimized) upper stairs landings are a major pain in
-    // the ass to handle, so we might as well take this opportunity to do a little patching of our own...
-    for (i=9; i<16; i++)
-    {	// Offset 0x280 is the intermediate right stairs landing
-        mask = readlong((uint8_t*)fbuffer[LOADER], EXIT_MASKS_START + 0x280 + 4*i);
-        // eliminating the lower right section of the exit mask seems to do the job
-        mask &= 0xFFFF8000;
-        writelong((uint8_t*)fbuffer[LOADER], EXIT_MASKS_START + 0x280 + 4*i, mask);
-    }
-
-    // The 3rd tunnel removable masks for overlays, on the compressed map, were not designed
-    // for widescreen, and as such the tunnel will show open if we don't patch it.
-    writebyte(fbuffer[LOADER], OUTSIDE_OVL_BASE+0x38+1, 0x05);
-
-    // In the original, they reset the tile index for tunnels, instead of starting at
-    // 0x1E0 (TUNNEL_TILE_ADDON) as they should have done. Because we use the latter
-    // more logical approach for efficiency, we'll patch a couple of words
-    writeword(fbuffer[LOADER], TUNNEL_EXIT_TILES_LIST+2*IN_TUNNEL_EXITS_START,
-        readword(fbuffer[LOADER], TUNNEL_EXIT_TILES_LIST+2*IN_TUNNEL_EXITS_START) + TUNNEL_TILE_ADDON);
-    writeword(fbuffer[LOADER], TUNNEL_EXIT_TILES_LIST+2*IN_TUNNEL_EXITS_START+2,
-        readword(fbuffer[LOADER], TUNNEL_EXIT_TILES_LIST+2*IN_TUNNEL_EXITS_START+2) + TUNNEL_TILE_ADDON);
-
-    // Don't want to be picky, but when you include an IFF Sample to be played as an SFX, you might want
-    // to make sure that either you remove the IFF header, or you start playing the actual BODY. The SFX
-    // for the door SFX was screwed up in the original game because of the 0x68 bytes header. We fix it:
-    writeword(fbuffer[LOADER], SFX_TABLE_START, readword(fbuffer[LOADER], SFX_TABLE_START) + 0x68);
-    writeword(fbuffer[LOADER], SFX_TABLE_START+6, readword(fbuffer[LOADER], SFX_TABLE_START+6) - 0x68);
-
-}
 
 // Initalize the SFXs
 void set_sfxs()

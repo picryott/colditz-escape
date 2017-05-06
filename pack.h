@@ -30,7 +30,7 @@
 extern "C" {
 #endif
 
-int uncompress(uint32_t expected_size);
+int uncompress(uint8_t *fbuffer, uint32_t expected_size);
 int ppDecrunch(uint8_t *src, uint8_t *dest, uint8_t *offset_lens, uint32_t src_len, uint32_t dest_len, uint8_t skip_bits);
 
 #ifdef	__cplusplus

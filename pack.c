@@ -83,14 +83,14 @@ void decrement(uint32_t *address)
 }
 
 // Duplicate nb_bytes from address+offset to address
-void duplicate(uint32_t *address, uint32_t offset, uint32_t nb_bytes)
+void duplicate(uint32_t *address, uint32_t offset, uint32_t nb_bytes, uint8_t *buffer)
 {
 	uint32_t i;
 	if (offset == 0)
 		perr("uncompress(): WARNING - zero offset value found for duplication\n");
 	for (i = 0; i<nb_bytes; i++)
 	{
-		writebyte(fbuffer[LOADER], (*address), readbyte(fbuffer[LOADER], (*address) + offset));
+		writebyte(buffer, (*address), readbyte(buffer, (*address) + offset));
 		decrement(address);
 	}
 }
@@ -98,7 +98,7 @@ void duplicate(uint32_t *address, uint32_t offset, uint32_t nb_bytes)
 /*
 *	Colditz loader uncompression. Algorithm is Bytekiller 1.3
 */
-int uncompress(uint32_t expected_size)
+int uncompress(uint8_t* buffer, uint32_t expected_size)
 {
 	uint32_t source = LOADER_DATA_START;
 	uint32_t uncompressed_size, current;
@@ -149,7 +149,7 @@ int uncompress(uint32_t expected_size)
 				nb_bytes_to_process = getbitstream(&source, &current, 8) + 1;
 				// Read offset (12 bit value)
 				offset = getbitstream(&source, &current, 12);
-				duplicate(&dest, offset, nb_bytes_to_process);
+				duplicate(&dest, offset, nb_bytes_to_process, buffer);
 				//                printb("  o mult=011: duplicated %d bytes at (start) offset %X to address %X\n",
 				//                        (uint)nb_bytes_to_process, (int)offset, (uint)dest+1);
 				break;
@@ -160,7 +160,7 @@ int uncompress(uint32_t expected_size)
 				// would be taken care of by a 3 bit bitstream
 				for (j = 0; j<nb_bytes_to_process; j++)
 				{	// Read and copy nb_bytes+1
-					writebyte(fbuffer[LOADER], dest, (uint8_t)getbitstream(&source, &current, 8));
+					writebyte(buffer, dest, (uint8_t)getbitstream(&source, &current, 8));
 					decrement(&dest);
 				}
 				//                printb("  o mult=111: copied %d bytes to address %X\n", (int)nb_bytes_to_process, (uint)dest+1);
@@ -171,7 +171,7 @@ int uncompress(uint32_t expected_size)
 				offset = getbitstream(&source, &current, nb_bits_to_process);
 				// Duplicate 2 or 3 bytes
 				nb_bytes_to_process = bit + 3;
-				duplicate(&dest, offset, nb_bytes_to_process);
+				duplicate(&dest, offset, nb_bytes_to_process, buffer);
 				//                printb("  o mult=%d01: duplicated %d bytes at (start) offset %X to address %X\n",
 				//                        (int)bit&1, (int)nb_bytes_to_process, (uint)offset, (uint)dest+1);
 				break;
@@ -185,7 +185,7 @@ int uncompress(uint32_t expected_size)
 				// Read 8 bit offset
 				offset = getbitstream(&source, &current, 8);
 				// Duplicate 1 byte
-				duplicate(&dest, offset, 2);
+				duplicate(&dest, offset, 2, buffer);
 				//                printb("  o mult=10: duplicated 2 bytes at (start) offset %X to address %X\n",
 				//                        (uint)offset, (uint)dest+1);
 			}
@@ -195,7 +195,7 @@ int uncompress(uint32_t expected_size)
 				nb_bytes_to_process = getbitstream(&source, &current, 3) + 1;
 				for (j = 0; j<nb_bytes_to_process; j++)
 				{	// Read and copy nb_bytes+1
-					writebyte(fbuffer[LOADER], dest, (uint8_t)getbitstream(&source, &current, 8));
+					writebyte(buffer, dest, (uint8_t)getbitstream(&source, &current, 8));
 					decrement(&dest);
 				}
 				//                printb("  o mult=00: copied 2 bytes to address %X\n", (uint)dest+1);

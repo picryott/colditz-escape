@@ -58,6 +58,7 @@
 #include "conf.h"
 #include "graphics.h"
 #include "game.h"
+#include "gamefiles.h"
 
 // For the savefile modification times
 #if defined(WIN32)

@@ -114,6 +114,7 @@
     <ClCompile Include="eschew\ConvertUTF.c" />
     <ClCompile Include="eschew\eschew.c" />
     <ClCompile Include="game.c" />
+    <ClCompile Include="gamefiles.c" />
     <ClCompile Include="getopt.c" />
     <ClCompile Include="graphics.c" />
     <ClCompile Include="low-level.c" />
@@ -136,6 +137,7 @@
     <ClInclude Include="eschew\ConvertUTF.h" />
     <ClInclude Include="eschew\eschew.h" />
     <ClInclude Include="game.h" />
+    <ClInclude Include="gamefiles.h" />
     <ClInclude Include="getopt.h" />
     <ClInclude Include="getopt_int.h" />
     <ClInclude Include="gettext.h" />

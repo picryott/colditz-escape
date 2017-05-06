@@ -74,6 +74,7 @@
 #include "eschew/eschew.h"
 #include "conf.h"
 #include "anti-tampering.h"
+#include "gamefiles.h"
 
 // Global variables
 
@@ -137,9 +138,6 @@ bool can_consume_key			= true;
 
 // File stuff
 FILE* fd					= NULL;
-char* fname[NB_FILES]		= FNAMES;			// file name(s)
-uint32_t   fsize[NB_FILES]		= FSIZES;
-uint8_t*   fbuffer[NB_FILES];
 uint8_t*	  rbuffer				= NULL;
 uint8_t*   mbuffer				= NULL;
 uint8_t*	  rgbCells				= NULL;
@@ -147,9 +145,6 @@ uint8_t*   static_image_buffer   = NULL;
 s_tex texture[NB_TEXTURES]	= TEXTURES;
 char* mod_name[NB_MODS]		= MOD_NAMES;
 const char confname[]		= "config.xml";
-#if defined(ANTI_TAMPERING_ENABLED)
-const uint8_t fmd5hash[NB_FILES][16] = FMD5HASHES;
-#endif
 
 
 // OpenGL window size
@@ -1632,34 +1627,7 @@ void configuration_init()
 	key_nation[5] = KEY_PRISONERS_RIGHT;
 }
 
-bool loadGameFiles()
-{
-	bool result = true;
-	uint16_t i = 0;
-	// Load the data. If it's the first time the game is ran, we might have
-	// to uncompress LOADTUNE.MUS (PowerPack) and SKR_COLD (custom compression)
-	load_all_files();
-#if defined(ANTI_TAMPERING_ENABLED)
-	for (i = 0; i < NB_FILES; i++)
-	{
-		if (!integrity_check(i))
-		{
-			perr("Integrity check failure on file '%s'\n", fname[i]);
-			result = false;
-		}
-	}
-#endif
-	if (result)
-	{
-		depack_loadtune();
-	}
-	// Some of the files need patching (this was done too in the original game!)
-	if (result)
-	{
-		fix_files(false);
-	}
-	return result;
-}
+
 
 bool graphics_init()
 {
@@ -1746,8 +1714,6 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
 int main(int argc, char *argv[])
 #endif
 {
-	// General purpose
-	uint32_t  i;
 
 #if defined(PSP)
 	setup_callbacks();
@@ -1758,8 +1724,7 @@ int main(int argc, char *argv[])
 
 	// A little cleanup
 	fflush(stdin);
-	for (i = 0; i < NB_FILES; i++)
-		fbuffer[i] = NULL;
+	gamefiles_init();
 
 	// Process commandline options (works for PSP too with psplink)
 	if (getCommandLine(argc, argv))

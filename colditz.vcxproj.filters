@@ -59,6 +59,9 @@
     <ClCompile Include="traces.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="gamefiles.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="anti-tampering.h">
@@ -143,6 +146,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="traces.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gamefiles.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

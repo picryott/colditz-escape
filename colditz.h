@@ -74,52 +74,7 @@ extern "C" {
 /*
  *	Files
  */
-// # data files from the original game
-#define NB_FILES				11
-// # files that need reload on a new game
-#define NB_FILES_TO_RELOAD		4
-// # file buffers that go into a savegame
-#define NB_FILES_TO_SAVE		5
-// Some handy identifier for files to make code reader friendly
-#define ROOMS					0
-#define COMPRESSED_MAP			1
-#define OBJECTS					2
-#define TUNNEL_IO				3
-#define GUARDS					4
-#define ROUTES					5
-#define SPRITES_PANEL			6
-#define CELLS					7
-#define PALETTES				8
-#define LOADER					9
-#define SPRITES					10
 
-// Files definitions
-#define FNAMES					{ "COLDITZ_ROOM_MAPS",	\
-								  "COMPRESSED_MAP",		\
-								  "OBS.BIN",			\
-								  "TUNNELIODOORS.BIN",	\
-								  "MENDAT.BIN",			\
-								  "ROUTES.BIN",			\
-								  "PANEL.BIN",			\
-								  "COLDITZ_CELLS",		\
-								  "PALS.BIN",			\
-								  "COLDITZ-LOADER",		\
-								  "SPRITES.SPR"			}
-#define FSIZES					{ 58828,				\
-								  33508,				\
-								  2056,					\
-								  120,					\
-								  1288,					\
-								  13364,				\
-								  11720,				\
-								  135944,				\
-								  232,					\
-								  56080,				\
-								  71056					}
-// Most of the archive versions from the net use the Skid Row loader
-#define ALT_LOADER				"SKR_COLD"
-#define ALT_LOADER_SIZE			28820
-#define ALT_LOADER_SIZE2        27940
 
 // Static images
 #define NB_TEXTURES				24
@@ -196,8 +151,6 @@ extern "C" {
 #define SFX_SHOOT				4
 
 
-// If we place our loader at address 0x80, we won't have to convert the pointers from the disassembly ;)
-#define LOADER_PADDING			0x00000080
 #define MENDAT_ITEM_SIZE		0x14
 #define INITIAL_PALETTE_INDEX	2
 
@@ -734,7 +687,6 @@ extern bool		init_animations;
 extern bool		is_fire_pressed;
 extern bool		can_consume_key;
 extern uint8_t		*mbuffer;	// Generic TMP buffer
-extern uint8_t		*fbuffer[NB_FILES];
 extern uint8_t		*rbuffer;
 extern FILE		*fd;		// Generic file descriptor
 extern uint8_t		*rgbCells;	// Cells table
@@ -754,8 +706,6 @@ extern uint16_t		game_state;
 extern float	fade_value;
 extern int		current_picture;
 extern uint16_t		nb_objects;
-extern char		*fname[NB_FILES];
-extern uint32_t		fsize[NB_FILES];
 extern char		*mod_name[NB_MODS];
 extern int		gl_width, gl_height;
 extern uint8_t		current_nation;
