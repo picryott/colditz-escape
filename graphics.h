@@ -28,6 +28,9 @@
 extern "C" {
 #endif
 
+#include "sprite.h"
+#include "overlay.h"
+
 // IFF tags & compression methods definitions
 #define MAKE_ID(a,b,c,d) ((uint32_t) ((a)<<24 | (b)<<16 | (c)<<8 | (d)))
 #define IFF_ILBM	MAKE_ID('I','L','B','M')

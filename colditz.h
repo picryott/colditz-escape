@@ -497,36 +497,6 @@ extern "C" {
  *	Global structs
  */
 
-// Structure to hold the standard RGBA sprites
-typedef struct
-{
-    uint16_t w;
-	uint16_t h;
-	// Politicaly correct w & h (power of twos, to keep the PSP happy)
-	uint16_t corrected_w;
-	uint16_t corrected_h;
-	int16_t x_offset;
-	int16_t y_offset;
-	int16_t z_offset;
-	uint8_t* data;
-} s_sprite;
-
-// for nonstandtard sprites (panel, etc)
-typedef struct
-{
-	uint16_t w;
-	uint16_t base;
-	uint32_t offset;
-} s_panel_sprite;
-
-// For room overlays (props, bed, stairs, etc)
-typedef struct
-{
-	int16_t x;
-	int16_t y;
-	int16_t z;
-	uint8_t  sid;
-} s_overlay;
 
 // Animated sprites data
 typedef struct

@@ -144,6 +144,8 @@
     <ClInclude Include="gettext.h" />
     <ClInclude Include="graphics.h" />
     <ClInclude Include="menu.h" />
+    <ClInclude Include="overlay.h" />
+    <ClInclude Include="sprite.h" />
     <ClInclude Include="traces.h" />
     <ClInclude Include="pack.h" />
     <ClInclude Include="low-level.h" />
