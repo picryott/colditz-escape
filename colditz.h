@@ -140,16 +140,6 @@ extern "C" {
 // Most archives will use the PPacked version of LOADTUNE
 #define PP_LOADTUNE_NAME		"LOADTUNE.MUS"
 #define PP_LOADTUNE_SIZE		66956
-// SFX data
-#define NB_SFXS					5
-#define SFX_TABLE_START			0x0000CA3E
-#define SFX_ADDRESS_START		0x0000CA6A
-#define SFX_DOOR				0
-#define SFX_WTF					1
-#define SFX_SAW					2
-#define SFX_FOOTSTEPS			3
-#define SFX_SHOOT				4
-
 
 #define MENDAT_ITEM_SIZE		0x14
 #define INITIAL_PALETTE_INDEX	2
@@ -495,19 +485,6 @@ extern "C" {
 /*
  *	Global structs
  */
-
-// Sound FXs
-typedef struct
-{
-	uint32_t				address;
-	uint16_t				length;
-	uint16_t				psp_length;
-	uint16_t				frequency;
-	uint8_t				volume;
-	short*			upconverted_address;
-	unsigned long	upconverted_length;
-} s_sfx;
-
 
 // Event related states (applies to prisoners only)
 typedef struct

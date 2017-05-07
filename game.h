@@ -148,7 +148,6 @@ void switch_nation(uint8_t new_nation);
 void switch_room(int16_t exit, bool tunnel_io);
 void timed_events(uint16_t hours, uint16_t minutes_high, uint16_t minutes_low);
 void check_on_prisoners();
-void play_sfx(int sfx_id);
 void go_to_jail(uint32_t p);
 void set_room_xy(uint16_t room);
 void set_props_overlays();

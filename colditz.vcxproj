@@ -124,6 +124,7 @@
     <ClCompile Include="menu.c" />
     <ClCompile Include="pack.c" />
     <ClCompile Include="psp\psp-setup.c" />
+    <ClCompile Include="sfx.c" />
     <ClCompile Include="soundplayer.cpp" />
     <ClCompile Include="traces.c" />
     <ClCompile Include="videoplayer.c" />
@@ -149,6 +150,7 @@
     <ClInclude Include="guybrush.h" />
     <ClInclude Include="menu.h" />
     <ClInclude Include="overlay.h" />
+    <ClInclude Include="sfx.h" />
     <ClInclude Include="sprite.h" />
     <ClInclude Include="traces.h" />
     <ClInclude Include="pack.h" />

@@ -26,6 +26,8 @@
 extern "C" {
 #endif
 
+#include <stdio.h>
+
 // Define our msleep function
 #if defined(WIN32)
 #define msleep(msecs) Sleep(msecs)

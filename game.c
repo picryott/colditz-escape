@@ -43,13 +43,13 @@
 #include "colditz.h"
 #include "graphics.h"
 #include "game.h"
-#include "cluck.h"
 #include "eschew/eschew.h"
 #include "conf.h"
 
 #include "pack.h"
 #include "gamefiles.h"
 #include "event.h"
+#include "sfx.h"
 
 /* Some more globals */
 uint8_t  obs_to_sprite[NB_OBS_TO_SPRITE];
@@ -79,12 +79,6 @@ uint32_t mask_offset[4];		// tile boundary
 uint32_t exit_offset[4];		// exit boundary
 uint8_t  tunexit_tool[4];	// tunnel tool
 int16_t exit_dx[2];
-s_sfx sfx[NB_SFXS];
-// Additional SFX
-short*			upcluck;
-unsigned long	upcluck_len;
-short*			upthrill;
-unsigned long	upthrill_len;
 
 
 // These are the offsets to the solitary cells doors for each prisoner
@@ -451,7 +445,7 @@ int get_animation_sid(uint8_t ani_index, bool is_guybrush)
     {	// play a sound
         sfx_id = readbyte(fbuffer[LOADER],
             readlong(fbuffer[LOADER], ani_base + 0x06) + frame + 1);
-        play_sfx(sfx_id);
+        play_sfx(sfx_id, fbuffer[LOADER], opt_thrillerdance);
         sid_increment = readbyte(fbuffer[LOADER],
             readlong(fbuffer[LOADER], ani_base + 0x06) + frame + 2);
         p_ani->framecount += 2;
@@ -1409,7 +1403,7 @@ bool guard_in_pursuit(int i, int p)
             // Set the event flags
             p_event[p].unauthorized = false;
             // Play the relevant SFX
-            play_sfx(SFX_SHOOT);
+            play_sfx(SFX_SHOOT, fbuffer[LOADER], opt_thrillerdance);
             // Stop all the guards in pursuit
             stop_guards_in_pursuit(p);
         }
@@ -2048,7 +2042,7 @@ int16_t check_footprint(int16_t dx, int16_t d2y)
                             (selected_prop[current_nation] == ((exit_flags & 0x60) >> 5)))
                         {
                             // Play the door SFX
-                            play_sfx(SFX_DOOR);
+                            play_sfx(SFX_DOOR, fbuffer[LOADER], opt_thrillerdance);
                             // enqueue the door opening animation
                             exit_nr = (uint8_t) readexit(tile_x+exit_dx[0],tile_y-2) & 0x1F;
                             // The trick is we use currently_animated[] to store our door sids
@@ -2170,9 +2164,9 @@ int16_t check_tunnel_io()
                     {	// Toggle the exit open and consume the relevant item
                         // Play the relevant SFX if needed
                         if (selected_prop[current_nation] == ITEM_SAW)
-                            play_sfx(SFX_SAW);
+                            play_sfx(SFX_SAW, fbuffer[LOADER], opt_thrillerdance);
                         else if (!in_tunnel)
-                            play_sfx(SFX_WTF);
+                            play_sfx(SFX_WTF, fbuffer[LOADER], opt_thrillerdance);
 
                         consume_prop();		// doesn't consume if opt_keymaster
                         show_prop_count();
@@ -2691,101 +2685,4 @@ void check_on_prisoners()
             }
         }
     }
-}
-
-
-
-// Initalize the SFXs
-void set_sfxs()
-{
-    uint16_t	i,j;
-
-    // Initialize SFXs
-    for (i=0; i<NB_SFXS; i++)
-    {
-        sfx[i].address   = SFX_ADDRESS_START + readword(fbuffer[LOADER], SFX_TABLE_START + 8*i);
-        sfx[i].volume    = readbyte(fbuffer[LOADER], SFX_TABLE_START + 8*i+3);
-        sfx[i].frequency = (uint16_t)(Period2Freq((float)readword(fbuffer[LOADER], SFX_TABLE_START + 8*i+4))/1.0);
-        sfx[i].length    = readword(fbuffer[LOADER], SFX_TABLE_START + 8*i+6);
-#if defined(WIN32)
-        // Why, of course Microsoft had to use UNSIGNED for 8 bit WAV data but SIGNED for 16!
-        // (Whereas Commodore et al. did the LOGICAL thing of using signed ALWAYS)
-        // We need to sign convert our 8 bit mono samples on Windows
-        for (j=0; j<sfx[i].length; j++)
-            writebyte(fbuffer[LOADER], sfx[i].address+j,
-                (uint8_t) (readbyte(fbuffer[LOADER], sfx[i].address+j) + 0x80));
-#elif defined(PSP)
-        // On the PSP on the other hand, we must upconvert our 8 bit mono samples @ whatever frequency
-        // to 16bit/44.1 kHz. The psp_upsample() routine from soundplayer is there for that.
-        psp_upsample(&(sfx[i].upconverted_address), &(sfx[i].upconverted_length),
-            (char*)(fbuffer[LOADER] + sfx[i].address), sfx[i].length, sfx[i].frequency);
-#else
-#error No SFX playout for this platform
-#endif
-    }
-
-    // The footstep's SFX volume is a bit too high for my taste
-    sfx[SFX_FOOTSTEPS].volume /= 3;
-
-#if defined(PSP)
-    // Let's upconvert us some chicken
-    for (j=0; j<sizeof(cluck_sfx); j++)
-        cluck_sfx[j] += 0x80;
-    psp_upsample(&upcluck, &upcluck_len, (char*)cluck_sfx, sizeof(cluck_sfx), 8000);
-    // "'coz this is thriller!..."
-    for (j=0; j<sizeof(thriller_sfx); j++)
-        thriller_sfx[j] += 0x80;
-    psp_upsample(&upthrill, &upthrill_len, (char*)thriller_sfx, sizeof(thriller_sfx), 8000);
-#endif
-}
-
-// Play one of the 5 game SFXs
-void play_sfx(int sfx_id)
-{
-    if (opt_thrillerdance)
-        return;
-#if defined(WIN32)
-    play_sample(-1, sfx[sfx_id].volume, fbuffer[LOADER] + sfx[sfx_id].address,
-        sfx[sfx_id].length, sfx[sfx_id].frequency, 8, false);
-#elif defined(PSP)
-    play_sample(-1, sfx[sfx_id].volume, sfx[sfx_id].upconverted_address,
-        sfx[sfx_id].upconverted_length, PLAYBACK_FREQ, 16, false);
-#else
-#error No SFX playout for this platform
-#endif
-}
-
-// Play one of the non game SFX
-void play_cluck()
-{
-    if (opt_thrillerdance)
-        return;
-    msleep(120);
-#if defined(WIN32)
-    play_sample(-1, 60, cluck_sfx, sizeof(cluck_sfx), 8000, 8, false);
-#elif defined(PSP)
-    play_sample(-1, 60, upcluck, upcluck_len, PLAYBACK_FREQ, 16, false);
-#else
-#error No SFX playout for this platform
-#endif
-}
-
-// Play one of the non game SFX
-void thriller_toggle()
-{
-static bool is_playing = false;
-
-    if (is_playing)
-        stop_loop();
-    else
-    {
-#if defined(WIN32)
-        play_sample(-1, 60, thriller_sfx, sizeof(thriller_sfx), 8000, 8, true);
-#elif defined(PSP)
-        play_sample(-1, 60, upthrill, upthrill_len, PLAYBACK_FREQ, 16, true);
-#else
-#error No SFX playout for this platform
-#endif
-    }
-    is_playing = !is_playing;
 }

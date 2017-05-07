@@ -77,6 +77,7 @@
 #include "gamefiles.h"
 #include "menu.h"
 #include "event.h"
+#include "sfx.h"
 
 // Global variables
 
@@ -617,7 +618,7 @@ void user_input()
                     default:
                         break;
                     }
-                    play_cluck();
+                    play_cluck(opt_thrillerdance);
                     printv("CHEAT[%d] activated!\n", i);
                     cheat_sequence[i].cur_pos = 0;
                 }
@@ -856,8 +857,10 @@ void user_input()
             prisoner_ani.end_of_ani_function = NULL;
         }
 
-        if (read_key_once(KEY_STOOGE))
-            play_sfx(0);
+		if (read_key_once(KEY_STOOGE))
+		{
+			play_sfx(SFX_DOOR, fbuffer[LOADER], opt_thrillerdance);
+		}
     }
 
     //
@@ -1115,7 +1118,7 @@ void process_menu()
                     enabled_menus[OPTIONS_MENU][MENU_ENHANCEMENTS] = 1;
                     enabled_menus[MAIN_MENU][MENU_SAVE] = 1;
                     enabled_menus[MAIN_MENU][MENU_LOAD] = 1;
-                    play_cluck();
+                    play_cluck(opt_thrillerdance);
                 }
                 break;
             default:
@@ -1624,7 +1627,7 @@ bool graphics_init()
 {
 	bool result = true;
 	set_textures();
-	set_sfxs();
+	sfxs_initialize(fbuffer[LOADER]);
 	// We're going to convert the cells array, from 2 pixels per byte (paletted)
 	// to on RGB(A) word per pixel
 	rgbCells = (uint8_t*) aligned_malloc(fsize[CELLS] * 2 * RGBA_SIZE, 16);

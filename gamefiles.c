@@ -28,6 +28,7 @@
 #include "low-level.h"
 #include "pack.h"
 #include "anti-tampering.h"
+#include "sfx.h"
 
 uint8_t*   fbuffer[NB_FILES];
 char*      fname[NB_FILES] = FNAMES;			// file name(s)
