@@ -497,16 +497,6 @@ extern "C" {
  *	Global structs
  */
 
-
-// Animated sprites data
-typedef struct
-{
-	uint32_t	index;	// index for the ani in the LOADER table
-	int32_t	framecount;
-	uint32_t end_of_ani_parameter;
-	void (*end_of_ani_function)(uint32_t);
-} s_animation;
-
 // Timed events
 typedef struct
 {
@@ -527,37 +517,6 @@ typedef struct
 	unsigned long	upconverted_length;
 } s_sfx;
 
-// Guybrushes (prisoners or guards)
-typedef struct
-{
-	uint16_t				room;					// Room index
-	int16_t				px;
-	int16_t				p2y;
-	int16_t				speed;					// Walk = 1, Run = 2
-	/* For animated overlays, direction is one of:
-	 *    3  2  4
-	 *    0  8  1
-	 *    6  5  7   */
-	int16_t				direction;
-	uint16_t				state;					// Motion related state (see above)
-	uint32_t				ext_bitmask;			// Removable walls bitmask
-	s_animation		animation;
-	bool			reset_animation;
-	bool			is_dressed_as_guard;
-	bool			is_onscreen;
-	// Guard activity variables
-	bool			reinstantiate;
-	bool			resume_motion;
-	bool			blocked_by_prisoner;
-	uint32_t				go_on;
-	uint32_t				spent_in_room;
-	uint16_t				wait;
-	int16_t				target;
-	int16_t				resume_px;
-	int16_t				resume_p2y;
-	int16_t				resume_direction;
-	bool			fooled_by[NB_NATIONS];
-} s_guybrush;
 
 // Event related states (applies to prisoners only)
 typedef struct

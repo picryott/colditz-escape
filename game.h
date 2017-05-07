@@ -28,6 +28,8 @@ extern "C" {
 #endif
 
 #include <stdbool.h>
+#include "animation.h"
+#include "guybrush.h"
 
 /*
  *	These game macro will come handy later on

@@ -50,7 +50,6 @@
 #include "pack.h"
 #include "gamefiles.h"
 
-
 /* Some more globals */
 uint8_t  obs_to_sprite[NB_OBS_TO_SPRITE];
 uint8_t	remove_props[CMP_MAP_WIDTH][CMP_MAP_HEIGHT];
