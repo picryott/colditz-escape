@@ -60,6 +60,7 @@
 #include "game.h"
 #include "gamefiles.h"
 #include "menu.h"
+#include "prisonerevent.h"
 
 // For the savefile modification times
 #if defined(WIN32)

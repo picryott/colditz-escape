@@ -50,6 +50,7 @@
 #include "gamefiles.h"
 #include "event.h"
 #include "sfx.h"
+#include "prisonerevent.h"
 
 /* Some more globals */
 uint8_t  obs_to_sprite[NB_OBS_TO_SPRITE];

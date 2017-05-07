@@ -486,23 +486,6 @@ extern "C" {
  *	Global structs
  */
 
-// Event related states (applies to prisoners only)
-typedef struct
-{
-	bool require_pass;
-	bool require_papers;
-	bool to_solitary;
-	bool unauthorized;
-	bool display_shot;
-	bool killed;
-	bool escaped;
-	bool thrown_stone;
-	uint64_t	 pass_grace_period_expires;
-	uint32_t  fatigue;
-	uint64_t  solitary_release;
-} s_prisoner_event;
-
-
 /*
  *	Defines, passing as globals (originally global variables)
  */
@@ -558,7 +541,6 @@ extern uint8_t		*rgbCells;	// Cells table
 extern uint8_t		*static_image_buffer;
 extern uint8_t		props[NB_NATIONS][NB_PROPS];
 extern uint8_t		selected_prop[NB_NATIONS];
-extern s_prisoner_event p_event[NB_NATIONS];
 extern uint8_t		nb_room_props;
 extern uint16_t		room_props[NB_OBSBIN];
 extern uint8_t		over_prop, over_prop_id;

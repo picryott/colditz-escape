@@ -78,6 +78,7 @@
 #include "menu.h"
 #include "event.h"
 #include "sfx.h"
+#include "prisonerevent.h"
 
 // Global variables
 
@@ -236,7 +237,6 @@ uint64_t			t_last, t_status_message_timeout, transition_start;
 uint64_t			picture_t;
 char*		status_message;
 int			status_message_priority;
-s_prisoner_event p_event[NB_NATIONS];
 uint8_t			nb_room_props = 0;
 uint8_t			props[NB_NATIONS][NB_PROPS];
 uint8_t			selected_prop[NB_NATIONS];
