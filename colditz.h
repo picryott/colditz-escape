@@ -268,38 +268,6 @@ extern "C" {
 #define TUNNEL_MSG_ID			0x35
 #define	COURTYARD_MSG_ID		0x36
 
-
-/*
- *	Menu stuff
- */
-#define MIN_MENU_FADE			0.4f
-#define MENU_MARKER				0x20
-#define NB_MENUS				4
-#define NB_MENU_ITEMS			10
-#define FIRST_MENU_ITEM			3
-#define MAIN_MENU				0
-#define OPTIONS_MENU			1
-#define SAVE_MENU				2
-#define LOAD_MENU				3
-#define ABOUT_MENU				4
-#define NB_SAVEGAMES			6
-// Items for the main menu
-#define MENU_RETURN				3
-#define MENU_RESTART			4
-#define MENU_SAVE				5
-#define MENU_LOAD				6
-#define MENU_OPTIONS			7
-#define MENU_EXIT				9
-// Items for the options menu
-#define MENU_BACK_TO_MAIN		3
-#define MENU_SKIP_INTRO			4
-#define MENU_PICTURE_CORNERS	5
-#define MENU_SMOOTHING			6
-#define MENU_FULLSCREEN			7
-#define MENU_ENHANCEMENTS		8
-#define MENU_ORIGINAL_MODE		9
-
-
 // Boundaries for courtyard authorized access (ROM:00002160)
 #define COURTYARD_MIN_X			0x300
 #define COURTYARD_MAX_X			0x5A0

@@ -63,9 +63,6 @@ extern s_overlay	*overlay;
 extern uint8_t			overlay_index;
 extern int16_t			gl_off_x, gl_off_y;
 extern int16_t			last_p_x, last_p_y;
-extern int			selected_menu_item, selected_menu;
-extern char*		menus[NB_MENUS][NB_MENU_ITEMS];
-extern bool			enabled_menus[NB_MENUS][NB_MENU_ITEMS];
 
 /*
  *	Public prototypes

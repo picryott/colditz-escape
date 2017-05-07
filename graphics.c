@@ -59,6 +59,7 @@
 #include "graphics.h"
 #include "game.h"
 #include "gamefiles.h"
+#include "menu.h"
 
 // For the savefile modification times
 #if defined(WIN32)
@@ -99,33 +100,6 @@ uint8_t			overlay_index;
 #if defined(WIN32)
 GLuint sp;							// Shader Program for zoom
 #endif
-
-/*
- *	Menu variables & consts
- */
-int	  selected_menu_item, selected_menu;
-char save_list[NB_SAVEGAMES][20];
-char* menus[NB_MENUS][NB_MENU_ITEMS] = {
-    {" MAIN MENU", "", "", "BACK TO GAME", "RESET GAME", "SAVE", "LOAD", "OPTIONS", "", "EXIT GAME"} ,
-    {" OPTIONS MENU", "", "", "BACK TO MAIN MENU", "SKIP INTRO     ", "PICTURE CORNERS",
-     "GFX SMOOTHING  ", "FULLSCREEN     ", "ENHANCEMENTS   ", "ORIGINAL MODE  " },
-     // The save slots of the following menus will be filled at runtime
-    {" SAVE MENU", "", "", "BACK TO MAIN MENU", NULL, NULL, NULL, NULL, NULL, NULL},
-    {" LOAD MENU", "", "", "BACK TO MAIN MENU", NULL, NULL, NULL, NULL, NULL, NULL} };
-char* on_off[3] = { "", ":ON", ":OFF"};
-char* smoothing[4] = { ":NONE", ":LINEAR", ":HQ2X"};
-
-bool  enabled_menus[NB_MENUS][NB_MENU_ITEMS] = {
-    { 0, 0, 0, 1, 1, 1, 1, 1, 0, 1 },
-#if defined(PSP)
-    // Options like linear interprolation and fullscreen don't make sense on PSP
-    { 0, 0, 0, 1, 1, 1, 0, 0, 1, 1 },
-#else
-    { 0, 0, 0, 1, 1, 1, 1, 1, 1, 1 },
-#endif
-    { 0, 0, 0, 1, 1, 1, 1, 1, 1, 1 },	// Save: all slots enabled by default
-    { 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 }	// Load: no slots available by default
-};
 
 
 // For the outside map, because of the removable sections and the fact that

@@ -75,6 +75,7 @@
 #include "conf.h"
 #include "anti-tampering.h"
 #include "gamefiles.h"
+#include "menu.h"
 
 // Global variables
 
