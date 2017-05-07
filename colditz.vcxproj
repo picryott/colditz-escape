@@ -113,6 +113,7 @@
     <ClCompile Include="conf.c" />
     <ClCompile Include="eschew\ConvertUTF.c" />
     <ClCompile Include="eschew\eschew.c" />
+    <ClCompile Include="event.c" />
     <ClCompile Include="game.c" />
     <ClCompile Include="gamefiles.c" />
     <ClCompile Include="getopt.c" />
@@ -130,6 +131,7 @@
     <ClCompile Include="win32\wmp.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="animation.h" />
     <ClInclude Include="anti-tampering.h" />
     <ClInclude Include="cluck.h" />
     <ClInclude Include="colditz.h" />
@@ -137,12 +139,14 @@
     <ClInclude Include="data-types.h" />
     <ClInclude Include="eschew\ConvertUTF.h" />
     <ClInclude Include="eschew\eschew.h" />
+    <ClInclude Include="event.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="gamefiles.h" />
     <ClInclude Include="getopt.h" />
     <ClInclude Include="getopt_int.h" />
     <ClInclude Include="gettext.h" />
     <ClInclude Include="graphics.h" />
+    <ClInclude Include="guybrush.h" />
     <ClInclude Include="menu.h" />
     <ClInclude Include="overlay.h" />
     <ClInclude Include="sprite.h" />

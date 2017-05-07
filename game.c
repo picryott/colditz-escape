@@ -49,6 +49,7 @@
 
 #include "pack.h"
 #include "gamefiles.h"
+#include "event.h"
 
 /* Some more globals */
 uint8_t  obs_to_sprite[NB_OBS_TO_SPRITE];
@@ -194,8 +195,7 @@ void newgame_init()
     }
 
     // clear the events array
-    for (i=0; i< NB_EVENTS; i++)
-        events[i].function = NULL;
+	events_resetCallbacks();
 
     // Set the default nation
     current_nation = BRITISH;
@@ -361,8 +361,7 @@ bool load_game(char* load_name)
 
 
     // clear a few arrays
-    for (i=0; i< NB_EVENTS; i++)
-        events[i].function = NULL;
+	events_resetCallbacks();
     for (i=0; i<CMP_MAP_WIDTH; i++)
         for (j=0; j<CMP_MAP_HEIGHT; j++)
             remove_props[i][j] = 0;
@@ -382,28 +381,6 @@ bool load_game(char* load_name)
     fclose(fd);
 
     return true;
-}
-
-
-// Simple event handler
-void enqueue_event(void (*f)(uint32_t), uint32_t p, uint64_t delay)
-{
-    uint8_t i;
-
-    // find an empty event to use
-    for (i=0; i< NB_EVENTS; i++)
-        if (events[i].function == NULL)
-            break;
-
-    if (i == NB_EVENTS)
-    {
-        perr("Couldn't enqueue event!!!\n");
-        return;
-    }
-
-    events[i].function = f;
-    events[i].parameter = p;
-    events[i].expiration_time = game_time + delay;
 }
 
 // Returns the last frame of an animation (usually the centered position)

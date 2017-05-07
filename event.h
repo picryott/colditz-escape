@@ -17,37 +17,33 @@
 *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 *
 *  ---------------------------------------------------------------------------
-*  trace.h: traces functions definitions
+*  event.h: events structures
 *  ---------------------------------------------------------------------------
 */
-#pragma once
 
-#ifdef	__cplusplus
-extern "C" {
-#endif
+#ifndef CE_EVENT_H_
+#define CE_EVENT_H_
 
-#include <stdbool.h>
-#include <stdio.h>
+#include <stdint.h>
 
-extern bool trace_verbose;
+// Timed events
+typedef struct
+{
+	uint64_t	expiration_time;
+	uint32_t parameter;
+	void(*function)(uint32_t);
+} s_event;
 
-/* initialize trace engine*/
-void trace_init();
-/* set the verbosity level for traces */
-void trace_setVerbose(bool flag);
+// Stack for time delayed events. Doubt we'll need more than that
+#define NB_EVENTS				32
+
+extern s_event	events[NB_EVENTS];
+
+void events_resetCallbacks();
+
+extern uint64_t game_time;
+void events_apply();
+void enqueue_event(void(*f)(uint32_t), uint32_t p, uint64_t delay);
 
 
-#if defined(PSP_ONSCREEN_STDOUT)
-#define perr(...)		printf(__VA_ARGS__)
-#else
-#define perr(...)		fprintf(stderr, __VA_ARGS__)
-#endif
-#define print(...)		printf(__VA_ARGS__)
-#define printv(...)		if(trace_verbose) print(__VA_ARGS__)
-#define perrv(...)		if(trace_verbose) perr(__VA_ARGS__)
-#define printb(...)		if(trace_verbose) print(__VA_ARGS__)
-#define perrb(...)		if(trace_verbose) perr(__VA_ARGS__)
-
-#ifdef	__cplusplus
-}
 #endif

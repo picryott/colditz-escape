@@ -17,37 +17,56 @@
 *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 *
 *  ---------------------------------------------------------------------------
-*  trace.h: traces functions definitions
+*  event.c: events structures
 *  ---------------------------------------------------------------------------
 */
-#pragma once
 
-#ifdef	__cplusplus
-extern "C" {
-#endif
+#include "event.h"
+#include "traces.h"
 
-#include <stdbool.h>
-#include <stdio.h>
-
-extern bool trace_verbose;
-
-/* initialize trace engine*/
-void trace_init();
-/* set the verbosity level for traces */
-void trace_setVerbose(bool flag);
+s_event		events[NB_EVENTS];
 
 
-#if defined(PSP_ONSCREEN_STDOUT)
-#define perr(...)		printf(__VA_ARGS__)
-#else
-#define perr(...)		fprintf(stderr, __VA_ARGS__)
-#endif
-#define print(...)		printf(__VA_ARGS__)
-#define printv(...)		if(trace_verbose) print(__VA_ARGS__)
-#define perrv(...)		if(trace_verbose) perr(__VA_ARGS__)
-#define printb(...)		if(trace_verbose) print(__VA_ARGS__)
-#define perrb(...)		if(trace_verbose) perr(__VA_ARGS__)
-
-#ifdef	__cplusplus
+void events_resetCallbacks()
+{
+	uint16_t i;
+	// clear the events array
+	for (i = 0; i< NB_EVENTS; i++)
+		events[i].function = NULL;
 }
-#endif
+void events_apply()
+{
+	uint16_t i;
+	for (i = 0; i<NB_EVENTS; i++)
+	{
+		if (events[i].function == NULL)
+			continue;
+		if (game_time > events[i].expiration_time)
+		{	// Execute the timeout function
+			events[i].function(events[i].parameter);
+			// Make the event available again
+			events[i].function = NULL;
+		}
+	}
+}
+
+// Simple event handler
+void enqueue_event(void(*f)(uint32_t), uint32_t p, uint64_t delay)
+{
+	uint8_t i;
+
+	// find an empty event to use
+	for (i = 0; i< NB_EVENTS; i++)
+		if (events[i].function == NULL)
+			break;
+
+	if (i == NB_EVENTS)
+	{
+		perr("Couldn't enqueue event!!!\n");
+		return;
+	}
+
+	events[i].function = f;
+	events[i].parameter = p;
+	events[i].expiration_time = game_time + delay;
+}

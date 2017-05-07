@@ -76,6 +76,7 @@
 #include "anti-tampering.h"
 #include "gamefiles.h"
 #include "menu.h"
+#include "event.h"
 
 // Global variables
 
@@ -234,7 +235,6 @@ uint64_t			t_last, t_status_message_timeout, transition_start;
 uint64_t			picture_t;
 char*		status_message;
 int			status_message_priority;
-s_event		events[NB_EVENTS];
 s_prisoner_event p_event[NB_NATIONS];
 uint8_t			nb_room_props = 0;
 uint8_t			props[NB_NATIONS][NB_PROPS];
@@ -967,17 +967,7 @@ static void glut_idle_game(void)
         }
 
         // Execute timed events, if any are in the queue
-        for (i = 0; i<NB_EVENTS; i++)
-        {
-            if (events[i].function == NULL)
-                continue;
-            if (game_time > events[i].expiration_time)
-            {	// Execute the timeout function
-                events[i].function(events[i].parameter);
-                // Make the event available again
-                events[i].function = NULL;
-            }
-        }
+		events_apply(game_time);
 
         // Take care of message display
         if (game_time > t_status_message_timeout)

@@ -346,8 +346,7 @@ extern "C" {
 /*
  *	Time related
  */
-// Stack for time delayed events. Doubt we'll need more than that
-#define NB_EVENTS				32
+
 // Time between animation frames, in ms
 #define ANIMATION_INTERVAL		120
 // 20 ms provides the same speed (for patrols) as on the Amiga
@@ -497,14 +496,6 @@ extern "C" {
  *	Global structs
  */
 
-// Timed events
-typedef struct
-{
-	uint64_t	expiration_time;
-	uint32_t parameter;
-	void (*function)(uint32_t);
-} s_event;
-
 // Sound FXs
 typedef struct
 {
@@ -608,7 +599,6 @@ extern int		gl_width, gl_height;
 extern uint8_t		current_nation;
 extern char		nb_props_message[32];
 extern uint64_t		game_time, last_atime, last_ptime, last_ctime, t_last;
-extern s_event	events[NB_EVENTS];
 
 /*
  *	Prototypes
